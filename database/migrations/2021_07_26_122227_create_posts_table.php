@@ -19,7 +19,7 @@ class CreatePostsTable extends Migration
             $table->char('title', 100);
             $table->string('description', 256);
             $table->longText('body');
-            $table->string('file_path')->default('default.png');
+            $table->string('image')->default('default.png');
             $table->bigInteger('user_id')->unsigned();
         });
         Schema::table('posts', function (Blueprint $table) {

@@ -3,10 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only('create');
+
+    }
+
+    public function posts_by_user(User $user)
+    {
+        $posts = $user->posts;
+        return view('blog.index', ['posts'=> $posts]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,8 +38,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        $post = new Post;
-        return view('blog.create', ['post'=> $post]);
+        return view('blog.create');
     }
 
     /**
@@ -37,7 +49,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image'=>  'required|image|mimes:jpeg,bmp,png,jpg'
+            ]);
+            $request->image->store('posts_images', 'public');
+        };
+
+        $post = Post::create([
+            'title' => $request->title,
+            'description'=> $request->description,
+            'body'=> $request->body,
+            'image'=> $request->image->hashName(),
+            'user_id'=> Auth::id()
+        ]);
+
+        return redirect()->route('posts.show', ['post'=> $post]);
+
     }
 
     /**
@@ -48,7 +76,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return view('blog.post', [$post]);
+        return view('blog.show', ['post'=> $post]);
     }
 
     /**

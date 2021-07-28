@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Redirect;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +19,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::resource('posts', PostController::class);
+
+Route::get('{user}/posts/', [PostController::class, 'posts_by_user'])->name('user.posts');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
